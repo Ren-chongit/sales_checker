@@ -129,6 +129,14 @@ def main():
         # Read CSV
         # Assuming CSV has headers. Based on `head` output: コード,仕入先名,合計原価,...
         df_csv = pd.read_csv(csv_path, encoding='cp932')
+        # Cleanup Column Names (Strip whitespace)
+        df_csv.columns = df_csv.columns.str.strip()
+        
+        # Check required columns
+        if 'コード' not in df_csv.columns:
+            # Fallback or Error
+            cols = ", ".join(df_csv.columns)
+            raise ValueError(f"CSVファイルに「コード」列が見つかりません。\n実際の列名: {cols}")
         
         # Extract PDF Data
         df_pdf = extract_pdf_data(pdf_path)
