@@ -4,6 +4,7 @@ import pandas as pd
 import pdfplumber
 import re
 import os
+import sys
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
@@ -222,10 +223,7 @@ def main():
                     cell.fill = fill_red
                     
         # Save File
-        # yyyymmdd is dependent on selected CSV. Let's assume filename has date or use today's date?
-        # User said: "yyyymmddは選択したcsvに依存"
-        # Example CSV: 20251211未払合計.csv -> 20251211
-        
+        # yyyymmdd is dependent on selected CSV.
         basename = os.path.basename(csv_path)
         match_date = re.search(r'\d{8}', basename)
         if match_date:
@@ -235,10 +233,19 @@ def main():
             date_str = datetime.now().strftime("%Y%m%d")
             
         output_filename = f"{date_str}マッチング済み.xlsx"
-        output_path = os.path.join(os.path.dirname(csv_path), output_filename)
+        
+        # Save to Desktop
+        desktop_path = os.path.join(os.path.expanduser('~'), 'Desktop')
+        output_path = os.path.join(desktop_path, output_filename)
         
         wb.save(output_path)
-        messagebox.showinfo("完了", f"マッチングが完了しました。\n保存先: {output_path}")
+        
+        # Confirm open
+        if messagebox.askyesno("完了", f"マッチングが完了しました。\n保存先: {output_path}\n\n作成されました。開きますか？"):
+            try:
+                os.startfile(output_path)
+            except Exception as e:
+                messagebox.showerror("エラー", f"ファイルを開けませんでした。\n{e}")
 
     except Exception as e:
         messagebox.showerror("エラー", f"予期せぬエラーが発生しました:\n{str(e)}")
