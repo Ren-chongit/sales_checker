@@ -9,3 +9,8 @@ dependencies = [
     "pandas>=2.3.3",
     "pdfplumber>=0.11.8",
 ]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.17.0",
+]
